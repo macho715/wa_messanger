@@ -162,6 +162,15 @@ function holdCellContent(row: WorkItemCard): ReactNode {
   );
 }
 
+function mobileCardMeta(label: string, value: ReactNode): ReactNode {
+  return (
+    <div style={mobileMetaItemStyle}>
+      <span style={mobileMetaLabelStyle}>{label}</span>
+      <strong style={mobileMetaValueStyle}>{value}</strong>
+    </div>
+  );
+}
+
 const MD_MIN = 768;
 /** Estimated row height for virtual padding (multiline-safe default). */
 const ROW_ESTIMATE_PX = 52;
@@ -585,7 +594,7 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
           </div>
         ) : null}
         {!wide ? (
-          <p style={mobileScrollHintStyle}>Swipe the queue horizontally on small screens to inspect every column.</p>
+          <p style={mobileScrollHintStyle}>Small screens now collapse the queue into summary cards before opening full evidence details.</p>
         ) : null}
         {syncHint ? (
           <p role="status" style={syncHintStyle}>
@@ -594,124 +603,192 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
         ) : null}
       </div>
       <div style={tableSurfaceStyle}>
-        <div ref={tableContainerRef} data-testid="work-board-scroll" style={tableScrollStyle}>
-          <table
-            id={tableId}
-            style={tableElementStyle}
-          >
-            <colgroup>
-              {table.getAllLeafColumns().map((column) => (
-                <col
-                  key={column.id}
-                  style={
-                    columnWidthById[column.id]
-                      ? { width: columnWidthById[column.id] }
-                      : undefined
-                  }
-                />
-              ))}
-            </colgroup>
-            <caption style={tableCaptionStyle}>
-              {title} — live work items. Select a row to view details
-              {detailEnabled ? '' : ' (detail panel disabled)'}.
-            </caption>
-            <thead style={tableHeadStyle}>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} style={{ textAlign: 'left' }}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      scope="col"
-                      style={{
-                        ...tableHeaderCellStyle,
-                        ...(columnWidthById[header.column.id]
-                          ? {
-                              width: columnWidthById[header.column.id],
-                              minWidth: columnWidthById[header.column.id],
-                            }
-                          : null),
-                      }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {rows.length === 0 ? (
-                <tr>
-                  <td colSpan={colCount} style={emptyCellStyle}>
-                    No work items yet. POST a WAHA group message to `/api/webhooks/waha`.
-                  </td>
-                </tr>
-              ) : (
-                <>
-                  {paddingTop > 0 ? (
-                    <tr aria-hidden>
-                      <td colSpan={colCount} style={{ ...padCellStyle, height: paddingTop }} />
-                    </tr>
-                  ) : null}
-                  {virtualItems.map((vr) => {
-                    const tableRow = tableRows[vr.index];
-                    if (!tableRow) return null;
-                    const r = tableRow.original;
-                    const selected = selectedId === r.id;
-                    const flash = flashIds.has(r.id);
-                    return (
-                      <tr
-                        key={r.id}
-                        data-index={vr.index}
-                        ref={(node) => rowVirtualizer.measureElement(node)}
+        {wide ? (
+          <div ref={tableContainerRef} data-testid="work-board-scroll" style={tableScrollStyle}>
+            <table
+              id={tableId}
+              style={tableElementStyle}
+            >
+              <colgroup>
+                {table.getAllLeafColumns().map((column) => (
+                  <col
+                    key={column.id}
+                    style={
+                      columnWidthById[column.id]
+                        ? { width: columnWidthById[column.id] }
+                        : undefined
+                    }
+                  />
+                ))}
+              </colgroup>
+              <caption style={tableCaptionStyle}>
+                {title} — live work items. Select a row to view details
+                {detailEnabled ? '' : ' (detail panel disabled)'}.
+              </caption>
+              <thead style={tableHeadStyle}>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id} style={{ textAlign: 'left' }}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        scope="col"
                         style={{
-                          borderBottom: '1px solid rgba(226, 232, 240, 0.88)',
-                          verticalAlign: 'top',
-                          cursor: detailEnabled ? 'pointer' : 'default',
-                          background: selected
-                            ? 'rgba(15, 23, 42, 0.06)'
-                            : flash
-                              ? 'rgba(254, 240, 138, 0.32)'
-                              : 'transparent',
-                          boxShadow: selected ? 'inset 4px 0 0 #0f172a' : undefined,
-                          outline: flash ? '2px solid rgba(217, 119, 6, 0.4)' : undefined,
-                          transition: prefersReducedMotion
-                            ? undefined
-                            : 'background 0.35s ease, box-shadow 0.2s ease',
+                          ...tableHeaderCellStyle,
+                          ...(columnWidthById[header.column.id]
+                            ? {
+                                width: columnWidthById[header.column.id],
+                                minWidth: columnWidthById[header.column.id],
+                              }
+                            : null),
                         }}
-                        {...(detailEnabled ? { 'aria-selected': selected } : {})}
-                        onClick={detailEnabled ? () => setSelectedId(r.id) : undefined}
                       >
-                        {tableRow.getVisibleCells().map((cell) => (
-                          <td
-                            key={cell.id}
-                            style={{
-                              ...tableBodyCellStyle,
-                              ...(columnWidthById[cell.column.id]
-                                ? {
-                                    width: columnWidthById[cell.column.id],
-                                    minWidth: columnWidthById[cell.column.id],
-                                  }
-                                : null),
-                            }}
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        ))}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={colCount} style={emptyCellStyle}>
+                      No work items yet. POST a WAHA group message to `/api/webhooks/waha`.
+                    </td>
+                  </tr>
+                ) : (
+                  <>
+                    {paddingTop > 0 ? (
+                      <tr aria-hidden>
+                        <td colSpan={colCount} style={{ ...padCellStyle, height: paddingTop }} />
                       </tr>
-                    );
-                  })}
-                  {paddingBottom > 0 ? (
-                    <tr aria-hidden>
-                      <td colSpan={colCount} style={{ ...padCellStyle, height: paddingBottom }} />
-                    </tr>
+                    ) : null}
+                    {virtualItems.map((vr) => {
+                      const tableRow = tableRows[vr.index];
+                      if (!tableRow) return null;
+                      const r = tableRow.original;
+                      const selected = selectedId === r.id;
+                      const flash = flashIds.has(r.id);
+                      return (
+                        <tr
+                          key={r.id}
+                          data-index={vr.index}
+                          ref={(node) => rowVirtualizer.measureElement(node)}
+                          style={{
+                            borderBottom: '1px solid rgba(226, 232, 240, 0.88)',
+                            verticalAlign: 'top',
+                            cursor: detailEnabled ? 'pointer' : 'default',
+                            background: selected
+                              ? 'rgba(15, 23, 42, 0.06)'
+                              : flash
+                                ? 'rgba(254, 240, 138, 0.32)'
+                                : 'transparent',
+                            boxShadow: selected ? 'inset 4px 0 0 #0f172a' : undefined,
+                            outline: flash ? '2px solid rgba(217, 119, 6, 0.4)' : undefined,
+                            transition: prefersReducedMotion
+                              ? undefined
+                              : 'background 0.35s ease, box-shadow 0.2s ease',
+                          }}
+                          {...(detailEnabled ? { 'aria-selected': selected } : {})}
+                          onClick={detailEnabled ? () => setSelectedId(r.id) : undefined}
+                        >
+                          {tableRow.getVisibleCells().map((cell) => (
+                            <td
+                              key={cell.id}
+                              style={{
+                                ...tableBodyCellStyle,
+                                ...(columnWidthById[cell.column.id]
+                                  ? {
+                                      width: columnWidthById[cell.column.id],
+                                      minWidth: columnWidthById[cell.column.id],
+                                    }
+                                  : null),
+                              }}
+                            >
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                    {paddingBottom > 0 ? (
+                      <tr aria-hidden>
+                        <td colSpan={colCount} style={{ ...padCellStyle, height: paddingBottom }} />
+                      </tr>
+                    ) : null}
+                  </>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : rows.length === 0 ? (
+          <div style={mobileEmptyStyle}>
+            No work items yet. POST a WAHA group message to `/api/webhooks/waha`.
+          </div>
+        ) : (
+          <div style={mobileListStyle}>
+            {rows.map((row) => {
+              const selected = selectedId === row.id;
+              const flash = flashIds.has(row.id);
+              const holdVisible = row.board_state === 'HOLD' || Boolean(row.hold_reason?.trim());
+              return (
+                <article
+                  key={row.id}
+                  style={{
+                    ...mobileCardStyle,
+                    ...(selected ? mobileCardSelectedStyle : null),
+                    ...(flash ? mobileCardFlashStyle : null),
+                  }}
+                >
+                  <div style={mobileCardToplineStyle}>
+                    <div style={mobilePillRowStyle}>
+                      {statePill(row.board_state, boardStateTone(row.board_state))}
+                      {statePill(row.event_status, eventStatusTone(row.event_status))}
+                    </div>
+                    <span style={mobileUpdatedStyle}>{formatBoardTimestamp(row.last_message_at)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedId(row.id)}
+                    style={mobileCardSelectButtonStyle}
+                  >
+                    <strong style={mobileCardTitleStyle}>{row.title}</strong>
+                    <span style={mobileCardMessageStyle}>
+                      msg {row.source_message_id.slice(0, 12)}…
+                    </span>
+                  </button>
+                  <div style={mobileMetaGridStyle}>
+                    {mobileCardMeta('Owner', row.owner_name ?? '—')}
+                    {mobileCardMeta('Type', row.type_code)}
+                    {mobileCardMeta('Shipment', row.shipment_label)}
+                    {mobileCardMeta('Group', row.group_id)}
+                  </div>
+                  {holdVisible ? (
+                    <div style={mobileHoldBannerStyle}>
+                      <span style={mobileHoldLabelStyle}>HOLD reason</span>
+                      <strong style={mobileHoldValueStyle}>{row.hold_reason?.trim() || '—'}</strong>
+                    </div>
                   ) : null}
-                </>
-              )}
-            </tbody>
-          </table>
-        </div>
+                  {detailEnabled ? (
+                    <div style={mobileActionRowStyle}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedId(row.id);
+                          setTimeout(() => dialogRef.current?.showModal(), 0);
+                        }}
+                        style={mobileOpenButtonStyle}
+                      >
+                        Open details
+                      </button>
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -943,6 +1020,144 @@ const syncHintStyle: CSSProperties = {
 const mobileScrollHintStyle: CSSProperties = {
   margin: 0,
   fontSize: '0.82rem',
+  color: '#64748b',
+};
+
+const mobileListStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.8rem',
+  padding: '0.85rem',
+};
+
+const mobileCardStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.72rem',
+  padding: '0.88rem',
+  borderRadius: '18px',
+  border: '1px solid rgba(226, 232, 240, 0.94)',
+  background: 'rgba(255, 255, 255, 0.96)',
+  boxShadow: '0 12px 28px rgba(15, 23, 42, 0.05)',
+};
+
+const mobileCardSelectedStyle: CSSProperties = {
+  borderColor: 'rgba(15, 23, 42, 0.24)',
+  boxShadow: '0 14px 32px rgba(15, 23, 42, 0.08)',
+};
+
+const mobileCardFlashStyle: CSSProperties = {
+  outline: '2px solid rgba(217, 119, 6, 0.28)',
+};
+
+const mobileCardToplineStyle: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'start',
+  gap: '0.75rem',
+};
+
+const mobilePillRowStyle: CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '0.35rem',
+};
+
+const mobileUpdatedStyle: CSSProperties = {
+  fontSize: '0.8rem',
+  color: '#64748b',
+  whiteSpace: 'nowrap',
+};
+
+const mobileCardSelectButtonStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.28rem',
+  padding: 0,
+  border: 'none',
+  background: 'transparent',
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
+const mobileCardTitleStyle: CSSProperties = {
+  fontSize: '1rem',
+  lineHeight: 1.35,
+  color: '#0f172a',
+};
+
+const mobileCardMessageStyle: CSSProperties = {
+  fontSize: '0.78rem',
+  color: '#64748b',
+};
+
+const mobileMetaGridStyle: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  gap: '0.6rem',
+};
+
+const mobileMetaItemStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.12rem',
+  padding: '0.62rem 0.68rem',
+  borderRadius: '14px',
+  background: 'rgba(248, 250, 252, 0.88)',
+  border: '1px solid rgba(226, 232, 240, 0.9)',
+};
+
+const mobileMetaLabelStyle: CSSProperties = {
+  fontSize: '0.68rem',
+  fontWeight: 700,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  color: '#64748b',
+};
+
+const mobileMetaValueStyle: CSSProperties = {
+  fontSize: '0.86rem',
+  lineHeight: 1.35,
+  color: '#0f172a',
+  wordBreak: 'break-word',
+};
+
+const mobileHoldBannerStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.2rem',
+  padding: '0.72rem 0.78rem',
+  borderRadius: '14px',
+  background: 'rgba(255, 237, 213, 0.72)',
+  border: '1px solid rgba(249, 115, 22, 0.2)',
+};
+
+const mobileHoldLabelStyle: CSSProperties = {
+  fontSize: '0.7rem',
+  fontWeight: 700,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  color: '#9a3412',
+};
+
+const mobileHoldValueStyle: CSSProperties = {
+  fontSize: '0.88rem',
+  lineHeight: 1.4,
+  color: '#7c2d12',
+};
+
+const mobileActionRowStyle: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+};
+
+const mobileOpenButtonStyle: CSSProperties = {
+  padding: '0.58rem 0.88rem',
+  borderRadius: '999px',
+  border: '1px solid rgba(15, 23, 42, 0.16)',
+  background: '#0f172a',
+  color: '#fff',
+  cursor: 'pointer',
+  fontWeight: 700,
+};
+
+const mobileEmptyStyle: CSSProperties = {
+  padding: '1rem',
   color: '#64748b',
 };
 

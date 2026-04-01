@@ -42,18 +42,20 @@
 - Preview artifacts:
   - `before.png`
   - `after.png`
+  - `after-mobile-p6.png`
   - `refs.md`
 - Notable trade-offs:
   - the shell is more compact and queue-first, but the shared hero title remains broad for all ops routes
-  - desktop readability improved more than narrow-width density, which remains the main follow-up area
+  - a P6 mobile pass now collapses the queue into summary cards instead of relying on horizontal table scroll
+  - mobile clarity improved, but longer queues will become taller and more scroll-heavy
 
 ## 6. Validation summary
 - Scorecard path: `artifacts/design-upgrade/20260401-230235/design-scorecard.json`
-- Average score: `4.20`
-- Weakest metric: `information_clarity = 3.9`
+- Average score: `4.33`
+- Weakest metric: `information_clarity = 4.2`
 - Blocking issues: none
 - Verdict: `PASS`
 
 ## 7. Remaining risks
-- The queue table still needs a narrow-width pass to keep title wrapping and column density equally clean on smaller screens.
-- Shared shell copy is stronger, but route-specific information clarity could improve further if `owner-board` and `hold` get route-tuned hero copy later.
+- Narrow-width horizontal scroll dependence has been reduced, but the mobile queue now trades width pressure for a taller vertical stack.
+- Route-specific hero copy is now clearer, but secondary control-strip density can still be simplified if the mobile pass expands beyond `/work-board`.

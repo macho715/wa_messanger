@@ -5,17 +5,17 @@
   "round": 1,
   "metrics": {
     "visual_hierarchy": 4.4,
-    "readability": 4.3,
-    "spacing_alignment": 4.2,
-    "component_consistency": 4.1,
-    "information_clarity": 3.9,
-    "usability": 4.2,
+    "readability": 4.4,
+    "spacing_alignment": 4.3,
+    "component_consistency": 4.2,
+    "information_clarity": 4.2,
+    "usability": 4.5,
     "brand_fit": 4.3
   },
   "blocking_issues": [],
   "notes": [
-    "Weakest metric: information_clarity.",
-    "Residual risk: narrow-width queue density and title wrapping still need a smaller-screen pass."
+    "P6 pass: narrow-width queue now defaults to summary cards instead of horizontal table scrolling.",
+    "Residual risk: mobile cards improve clarity, but they create a taller vertical stack on long queues."
   ],
   "before_artifact": "C:/Users/jichu/Downloads/wa-message-ops-spike-0.1.0-standalone/artifacts/design-upgrade/20260401-230235/before.png",
   "after_artifact": "C:/Users/jichu/Downloads/wa-message-ops-spike-0.1.0-standalone/artifacts/design-upgrade/20260401-230235/after.png",
