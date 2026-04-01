@@ -20,7 +20,8 @@ export const maxDuration = 30;
 export async function POST(request: Request) {
   const rawBody = await request.text();
   const supabase = getSupabaseAdmin();
-  const headerSig = extractWahaSignature(request.headers);
+  const signatureEnvelope = extractWahaSignature(request.headers);
+  const headerSig = signatureEnvelope.signature;
   const rawHeaders = headersToObject(request.headers);
 
   let rawId: number;
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (!verifyWahaSignature(rawBody, headerSig)) {
+    if (!verifyWahaSignature(rawBody, headerSig, signatureEnvelope.algorithm)) {
       await markRawEvent(supabase, rawId, 'REJECTED', 'invalid signature');
       return NextResponse.json({ ok: false, error: 'invalid signature' }, { status: 403 });
     }
