@@ -24,16 +24,11 @@ function baseParsed(over: Partial<ParsedMessage> = {}): ParsedMessage {
 
 describe('upsertWaMessageParse', () => {
   it('persists parser evidence instead of empty placeholders', async () => {
-    const upsert = vi.fn().mockResolvedValue({ error: null });
+    const rpc = vi.fn().mockResolvedValue({ error: null });
     const client = {
-      schema(schema: string) {
-        expect(schema).toBe('ops_private');
-        return {
-          from(table: string) {
-            expect(table).toBe('wa_message_parse');
-            return { upsert };
-          },
-        };
+      rpc(fn: string, payload: Record<string, unknown>) {
+        expect(fn).toBe('ops_upsert_wa_message_parse');
+        return rpc(fn, payload);
       },
     } as unknown as SupabaseClient;
 
@@ -41,11 +36,12 @@ describe('upsertWaMessageParse', () => {
       shipmentRefId: '550e8400-e29b-41d4-a716-446655440000',
     });
 
-    expect(upsert).toHaveBeenCalledWith(
+    expect(rpc).toHaveBeenCalledWith(
+      'ops_upsert_wa_message_parse',
       expect.objectContaining({
-        message_id: 42,
-        keywords_hit: ['BOE', 'pending', 'customs'],
-        extracted: expect.objectContaining({
+        p_message_id: 42,
+        p_keywords_hit: ['BOE', 'pending', 'customs'],
+        p_extracted: expect.objectContaining({
           title: '[DOC_CUSTOMS] BOE pending',
           owner_name: 'Jay',
           hold_reason: 'WAIT_DOC',
@@ -53,7 +49,6 @@ describe('upsertWaMessageParse', () => {
           shipment_key_candidates: ['HVDC-ADOPT-SCT-0001'],
         }),
       }),
-      { onConflict: 'message_id' },
     );
   });
 });

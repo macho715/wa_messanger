@@ -82,36 +82,28 @@ export async function POST(request: Request) {
     candidates.length > 0 ? findShipmentLink(supabase, candidates) : Promise.resolve(null);
 
   const [msgResult, shipmentRefId] = await Promise.all([
-    supabase
-      .schema('ops_private')
-      .from('wa_message')
-      .upsert(
-        {
-          waha_message_id: event.messageId,
-          chat_id: event.groupId,
-          from_jid: event.participantId,
-          reply_to_message_id: event.replyToMessageId,
-          body_raw: event.bodyRaw,
-          body_norm: bodyNorm,
-          sent_at: event.sentAt,
-          payload_json: event.payload as object,
-          raw_event_id: canonicalRawId,
-        },
-        { onConflict: 'waha_message_id' },
-      )
-      .select('id')
-      .single(),
+    supabase.rpc('ops_upsert_wa_message', {
+      p_waha_message_id: event.messageId,
+      p_chat_id: event.groupId,
+      p_from_jid: event.participantId,
+      p_reply_to_message_id: event.replyToMessageId,
+      p_body_raw: event.bodyRaw,
+      p_body_norm: bodyNorm,
+      p_sent_at: event.sentAt,
+      p_payload_json: event.payload as object,
+      p_raw_event_id: canonicalRawId,
+    }),
     shipmentLookup,
   ]);
 
-  const { data: msgRow, error: msgError } = msgResult;
+  const { data: msgRowId, error: msgError } = msgResult;
   if (msgError) {
     await markRawEvent(supabase, canonicalRawId, 'ERROR', msgError.message);
     return NextResponse.json({ ok: false, error: msgError.message }, { status: 500 });
   }
 
   try {
-    await upsertWaMessageParse(supabase, Number(msgRow.id), parsed, { shipmentRefId });
+    await upsertWaMessageParse(supabase, Number(msgRowId), parsed, { shipmentRefId });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'parse_ledger_failed';
     await markRawEvent(supabase, canonicalRawId, 'ERROR', msg);

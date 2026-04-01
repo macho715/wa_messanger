@@ -9,7 +9,8 @@ $sources = @(
   '0001_ops_private_and_public_core.sql',
   '0002_rls_realtime.sql',
   '0003_mm_raw_audit_and_shipment.sql',
-  '0004_work_item_shipment_fk.sql'
+  '0004_work_item_shipment_fk.sql',
+  '0005_ops_private_rpc_bridge.sql'
 )
 
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
