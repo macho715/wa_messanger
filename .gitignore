@@ -13,3 +13,5 @@ whatsapp groupchat/
 *.log
 *.tmp
 *.temp
+
+.vercel
