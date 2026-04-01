@@ -1,4 +1,7 @@
+'use client';
+
 import type { CSSProperties, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { OpsNav } from './OpsNav';
 
 type Props = {
@@ -9,6 +12,9 @@ type Props = {
 };
 
 export function PageShell({ eyebrow, title, description, children }: Props) {
+  const pathname = usePathname();
+  const routeContent = heroCopyForPath(pathname, { eyebrow, title, description });
+
   return (
     <div style={shellStyle}>
       <div aria-hidden style={ambientGlowPrimaryStyle} />
@@ -17,28 +23,28 @@ export function PageShell({ eyebrow, title, description, children }: Props) {
       <main style={mainStyle}>
         <section style={heroStyle}>
           <div style={heroToplineStyle}>
-            <p style={eyebrowStyle}>{eyebrow}</p>
-            <span style={heroBadgeStyle}>Evidence-linked operations</span>
+            <p style={eyebrowStyle}>{routeContent.eyebrow}</p>
+            <span style={heroBadgeStyle}>{routeContent.badge}</span>
           </div>
           <div style={heroGridStyle}>
             <div style={copyColumnStyle}>
-              <h1 style={titleStyle}>{title}</h1>
-              <p style={descriptionStyle}>{description}</p>
+              <h1 style={titleStyle}>{routeContent.title}</h1>
+              <p style={descriptionStyle}>{routeContent.description}</p>
             </div>
             <aside style={signalPanelStyle} aria-label="Shell profile">
               <p style={signalKickerStyle}>Shell profile</p>
               <div style={signalGridStyle}>
                 <div style={signalCardStyle}>
                   <span style={signalLabelStyle}>Tone</span>
-                  <strong style={signalValueStyle}>Calm, light, operational</strong>
+                  <strong style={signalValueStyle}>{routeContent.tone}</strong>
                 </div>
                 <div style={signalCardStyle}>
                   <span style={signalLabelStyle}>Flow</span>
-                  <strong style={signalValueStyle}>Queue to owner to hold</strong>
+                  <strong style={signalValueStyle}>{routeContent.flow}</strong>
                 </div>
                 <div style={signalCardStyle}>
                   <span style={signalLabelStyle}>Motion</span>
-                  <strong style={signalValueStyle}>Feedback, not theater</strong>
+                  <strong style={signalValueStyle}>{routeContent.motion}</strong>
                 </div>
               </div>
             </aside>
@@ -48,6 +54,69 @@ export function PageShell({ eyebrow, title, description, children }: Props) {
       </main>
     </div>
   );
+}
+
+type HeroCopy = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  badge: string;
+  tone: string;
+  flow: string;
+  motion: string;
+};
+
+function heroCopyForPath(
+  pathname: string | null,
+  fallback: Pick<HeroCopy, 'eyebrow' | 'title' | 'description'>,
+): HeroCopy {
+  const base: HeroCopy = {
+    eyebrow: fallback.eyebrow,
+    title: fallback.title,
+    description: fallback.description,
+    badge: 'Evidence-linked operations',
+    tone: 'Calm, light, operational',
+    flow: 'Queue to owner to hold',
+    motion: 'Feedback, not theater',
+  };
+
+  if (!pathname) return base;
+
+  if (pathname.startsWith('/work-board')) {
+    return {
+      ...base,
+      title: 'Message Work Board',
+      description:
+        'Scan the full live queue first, then open evidence and shipment context only after the operating posture is clear.',
+      flow: 'Queue scan to evidence',
+    };
+  }
+
+  if (pathname.startsWith('/owner-board')) {
+    return {
+      ...base,
+      eyebrow: 'Owner operations',
+      title: 'Owner Follow-Up Board',
+      description:
+        'Narrow the queue around named owners so handoff, follow-up, and execution responsibility stay visible in one view.',
+      badge: 'Assignment-linked operations',
+      flow: 'Owner follow-up loop',
+    };
+  }
+
+  if (pathname.startsWith('/hold')) {
+    return {
+      ...base,
+      eyebrow: 'Exception operations',
+      title: 'HOLD Resolution Board',
+      description:
+        'Bring waiting reasons and blocked execution to the front so unblock loops are explicit before items return to the main flow.',
+      badge: 'Exception-linked operations',
+      flow: 'Hold reason to unblock',
+    };
+  }
+
+  return base;
 }
 
 const shellStyle: CSSProperties = {
