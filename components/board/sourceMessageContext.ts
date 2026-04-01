@@ -100,6 +100,24 @@ function collectSummary(value: unknown): string | null {
   return null;
 }
 
+function collectEvidenceMessageSummary(value: unknown): string | null {
+  if (!isPlainObject(value)) return null;
+  const evidence = value.evidence;
+  if (!isPlainObject(evidence)) return null;
+  const messages = evidence.messages;
+  if (!Array.isArray(messages) || messages.length === 0) return null;
+  const first = messages[0];
+  if (!isPlainObject(first)) return null;
+
+  for (const key of ['bodyRaw', 'bodyNorm', 'messageId']) {
+    const candidate = first[key];
+    if (typeof candidate === 'string' && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+  return null;
+}
+
 function addDetail(details: ContextDetail[], label: string, value: unknown) {
   if (!isMeaningfulPrimitive(value) && !Array.isArray(value) && !isPlainObject(value)) return;
   const formatted = formatValue(value);
@@ -199,7 +217,7 @@ function parsePayload(
   sourceMessageId: string,
 ): SourceMessageContextView {
   const unwrapped = unwrapPayload(payload);
-  const summary = collectSummary(unwrapped);
+  const summary = collectEvidenceMessageSummary(unwrapped) ?? collectSummary(unwrapped);
   const details = collectDetails(unwrapped);
   const hasContext =
     isMeaningfulPrimitive(unwrapped) ||
