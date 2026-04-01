@@ -1,0 +1,29 @@
+{
+    "package_name":  "wa-message-ops-spike",
+    "version":  "0.1.0",
+    "bundle_type":  "next-standalone",
+    "packaged_at":  "2026-03-31T00:27:48.1522637+04:00",
+    "zip_name":  "wa-message-ops-spike-0.1.0-standalone.zip",
+    "entrypoint":  "server.js",
+    "start_scripts":  [
+                          "start.ps1",
+                          "start.cmd"
+                      ],
+    "required_runtime":  "Node.js 20+",
+    "required_env":  [
+                         "NEXT_PUBLIC_SUPABASE_URL",
+                         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+                         "SUPABASE_SERVICE_ROLE_KEY",
+                         "WA_WEBHOOK_SECRET"
+                     ],
+    "included":  [
+                     "server.js",
+                     ".next/static",
+                     "node_modules (standalone subset)",
+                     ".env.example",
+                     "README.md",
+                     "start.ps1",
+                     "start.cmd"
+                 ],
+    "parity_report_included":  true
+}

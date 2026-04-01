@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+output/
+test-results/
+
+.env.local
+.next-dev.log
+tsconfig.tsbuildinfo
+
+whatsapp groupchat/
+
+*.log
+*.tmp
+*.temp

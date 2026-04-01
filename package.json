@@ -1,0 +1,35 @@
+{
+  "name": "wa-message-ops-spike",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3006",
+    "build": "next build",
+    "start": "next start -p 3006",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm exec vitest run",
+    "test:e2e": "pnpm exec playwright test",
+    "test:e2e:ui": "pnpm exec playwright test --ui",
+    "package:zip": "powershell -ExecutionPolicy Bypass -File scripts/package.ps1",
+    "package:standalone": "powershell -ExecutionPolicy Bypass -File scripts/package-standalone.ps1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.23",
+    "next": "16.0.10",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "jsdom": "^29.0.0",
+    "typescript": "^5",
+    "vitest": "^2.1.8"
+  }
+}
