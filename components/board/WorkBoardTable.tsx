@@ -231,6 +231,17 @@ function describeBoardLoadError(error: Error | PostgrestError | string): BoardLo
 const detailEnabled =
   typeof process !== 'undefined' && process.env.NEXT_PUBLIC_DETAIL_PANEL !== '0';
 
+const columnWidthById: Record<string, string> = {
+  board_state: '108px',
+  event_status: '128px',
+  title: '340px',
+  type_code: '132px',
+  owner_name: '116px',
+  hold: '142px',
+  shipment_label: '126px',
+  last_message_at: '132px',
+};
+
 const columnHelper = createColumnHelper<WorkItemCard>();
 
 const columns = [
@@ -246,7 +257,19 @@ const columns = [
     header: 'Title',
     cell: (info) => (
       <div style={{ display: 'grid', gap: '0.28rem' }}>
-        <strong style={{ fontSize: '0.97rem', lineHeight: 1.25, color: '#0f172a' }}>{info.getValue()}</strong>
+        <strong
+          style={{
+            fontSize: '0.97rem',
+            lineHeight: 1.3,
+            color: '#0f172a',
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {info.getValue()}
+        </strong>
         <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
           msg {info.row.original.source_message_id.slice(0, 12)}…
         </span>
@@ -518,12 +541,26 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
   const tableBlock = (
     <div style={{ minWidth: 0, flex: 1, display: 'grid', gap: '0.9rem' }}>
       <div style={tableIntroCardStyle}>
-        <div style={tableIntroToplineStyle}>
-          <div>
+        <div
+          style={{
+            ...tableIntroToplineStyle,
+            gridTemplateColumns: wide ? 'minmax(0, 1.35fr) minmax(280px, 0.9fr)' : '1fr',
+          }}
+        >
+          <div style={{ display: 'grid', gap: '0.42rem' }}>
             <p style={tableIntroEyebrowStyle}>Live queue</p>
             <h2 style={tableIntroTitleStyle}>{title}</h2>
+            <p style={tableIntroBodyStyle}>
+              Work the queue as a scan surface first. Expand a row only after the status, owner,
+              and linkage posture are clear.
+            </p>
           </div>
-          <div style={tableStatGridStyle}>
+          <div
+            style={{
+              ...tableStatGridStyle,
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            }}
+          >
             <div style={tableStatCardStyle}>
               <span style={tableStatLabelStyle}>Rows</span>
               <strong style={tableStatValueStyle}>{rows.length}</strong>
@@ -538,9 +575,6 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
             </div>
           </div>
         </div>
-        <p style={tableIntroBodyStyle}>
-          Operate the queue first, then inspect evidence and shipment context in the side panel.
-        </p>
         {activeFilterPills.length > 0 ? (
           <div style={filterPillRowStyle}>
             {activeFilterPills.map((pill) => (
@@ -549,6 +583,9 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
               </span>
             ))}
           </div>
+        ) : null}
+        {!wide ? (
+          <p style={mobileScrollHintStyle}>Swipe the queue horizontally on small screens to inspect every column.</p>
         ) : null}
         {syncHint ? (
           <p role="status" style={syncHintStyle}>
@@ -562,6 +599,18 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
             id={tableId}
             style={tableElementStyle}
           >
+            <colgroup>
+              {table.getAllLeafColumns().map((column) => (
+                <col
+                  key={column.id}
+                  style={
+                    columnWidthById[column.id]
+                      ? { width: columnWidthById[column.id] }
+                      : undefined
+                  }
+                />
+              ))}
+            </colgroup>
             <caption style={tableCaptionStyle}>
               {title} — live work items. Select a row to view details
               {detailEnabled ? '' : ' (detail panel disabled)'}.
@@ -570,7 +619,19 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} style={{ textAlign: 'left' }}>
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} scope="col" style={tableHeaderCellStyle}>
+                    <th
+                      key={header.id}
+                      scope="col"
+                      style={{
+                        ...tableHeaderCellStyle,
+                        ...(columnWidthById[header.column.id]
+                          ? {
+                              width: columnWidthById[header.column.id],
+                              minWidth: columnWidthById[header.column.id],
+                            }
+                          : null),
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -623,7 +684,18 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
                         onClick={detailEnabled ? () => setSelectedId(r.id) : undefined}
                       >
                         {tableRow.getVisibleCells().map((cell) => (
-                          <td key={cell.id} style={tableBodyCellStyle}>
+                          <td
+                            key={cell.id}
+                            style={{
+                              ...tableBodyCellStyle,
+                              ...(columnWidthById[cell.column.id]
+                                ? {
+                                    width: columnWidthById[cell.column.id],
+                                    minWidth: columnWidthById[cell.column.id],
+                                  }
+                                : null),
+                            }}
+                          >
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </td>
                         ))}
@@ -653,7 +725,7 @@ export function WorkBoardTable({ filterBoardState, filterOwnerName, title }: Pro
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: wide ? 'minmax(0, 1fr) minmax(280px, 400px)' : '1fr',
+          gridTemplateColumns: wide ? 'minmax(0, 1fr) minmax(300px, 360px)' : '1fr',
           gap: wide ? '1rem' : 0,
           alignItems: 'start',
           padding: wide ? '0 1rem 1rem' : 0,
@@ -774,8 +846,8 @@ const errorGuidanceStyle: CSSProperties = {
 
 const tableIntroCardStyle: CSSProperties = {
   display: 'grid',
-  gap: '0.8rem',
-  padding: '1.05rem 1.1rem',
+  gap: '0.9rem',
+  padding: '1rem 1.05rem',
   borderRadius: '20px',
   border: '1px solid rgba(148, 163, 184, 0.24)',
   background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248, 245, 238, 0.92) 100%)',
@@ -784,8 +856,8 @@ const tableIntroCardStyle: CSSProperties = {
 
 const tableIntroToplineStyle: CSSProperties = {
   display: 'grid',
-  gap: '0.9rem',
-  gridTemplateColumns: 'minmax(0, 1.25fr) minmax(260px, 0.95fr)',
+  gap: '1rem',
+  gridTemplateColumns: 'minmax(0, 1.35fr) minmax(280px, 0.9fr)',
   alignItems: 'start',
 };
 
@@ -801,7 +873,7 @@ const tableIntroEyebrowStyle: CSSProperties = {
 const tableIntroTitleStyle: CSSProperties = {
   margin: '0.25rem 0 0',
   fontFamily: 'var(--font-display), sans-serif',
-  fontSize: '1.6rem',
+  fontSize: '1.72rem',
   lineHeight: 1,
   letterSpacing: '-0.04em',
   color: '#0f172a',
@@ -810,21 +882,22 @@ const tableIntroTitleStyle: CSSProperties = {
 const tableIntroBodyStyle: CSSProperties = {
   margin: 0,
   color: '#475569',
-  lineHeight: 1.55,
+  lineHeight: 1.6,
+  maxWidth: '58ch',
 };
 
 const tableStatGridStyle: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-  gap: '0.55rem',
+  gap: '0.6rem',
 };
 
 const tableStatCardStyle: CSSProperties = {
   display: 'grid',
-  gap: '0.15rem',
-  padding: '0.7rem',
-  borderRadius: '14px',
-  background: 'rgba(255,255,255,0.86)',
+  gap: '0.22rem',
+  padding: '0.78rem 0.7rem',
+  borderRadius: '16px',
+  background: 'rgba(255,255,255,0.92)',
   border: '1px solid rgba(148, 163, 184, 0.18)',
 };
 
@@ -837,7 +910,7 @@ const tableStatLabelStyle: CSSProperties = {
 
 const tableStatValueStyle: CSSProperties = {
   fontFamily: 'var(--font-display), sans-serif',
-  fontSize: '1.1rem',
+  fontSize: '1.22rem',
   lineHeight: 1,
   color: '#0f172a',
 };
@@ -867,6 +940,12 @@ const syncHintStyle: CSSProperties = {
   fontWeight: 600,
 };
 
+const mobileScrollHintStyle: CSSProperties = {
+  margin: 0,
+  fontSize: '0.82rem',
+  color: '#64748b',
+};
+
 const tableSurfaceStyle: CSSProperties = {
   border: '1px solid rgba(148, 163, 184, 0.22)',
   borderRadius: '22px',
@@ -882,6 +961,7 @@ const tableScrollStyle: CSSProperties = {
 
 const tableElementStyle: CSSProperties = {
   width: '100%',
+  minWidth: '1220px',
   borderCollapse: 'collapse',
   fontSize: '0.9rem',
   tableLayout: 'fixed',
@@ -892,6 +972,7 @@ const tableCaptionStyle: CSSProperties = {
   padding: '0.7rem 1rem 0.55rem',
   color: '#64748b',
   fontSize: '0.82rem',
+  borderBottom: '1px solid rgba(226, 232, 240, 0.9)',
 };
 
 const tableHeadStyle: CSSProperties = {
@@ -903,7 +984,7 @@ const tableHeadStyle: CSSProperties = {
 };
 
 const tableHeaderCellStyle: CSSProperties = {
-  padding: '0.78rem 0.85rem',
+  padding: '0.82rem 0.85rem',
   fontSize: '0.76rem',
   fontWeight: 700,
   color: '#475569',
@@ -912,7 +993,7 @@ const tableHeaderCellStyle: CSSProperties = {
 };
 
 const tableBodyCellStyle: CSSProperties = {
-  padding: '0.82rem 0.85rem',
+  padding: '0.9rem 0.85rem',
 };
 
 const emptyCellStyle: CSSProperties = {

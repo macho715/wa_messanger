@@ -85,15 +85,15 @@ const mainStyle: CSSProperties = {
   width: '100%',
   maxWidth: '1280px',
   margin: '0 auto',
-  padding: '1.4rem 1rem 2.5rem',
+  padding: '1rem 1rem 2.2rem',
   display: 'grid',
-  gap: '1.15rem',
+  gap: '0.95rem',
 };
 
 const heroStyle: CSSProperties = {
   display: 'grid',
-  gap: '1rem',
-  padding: '1.45rem',
+  gap: '0.85rem',
+  padding: '1.15rem 1.2rem',
   border: '1px solid rgba(148, 163, 184, 0.28)',
   borderRadius: '24px',
   background: 'linear-gradient(160deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.84) 100%)',
@@ -111,9 +111,9 @@ const heroToplineStyle: CSSProperties = {
 
 const heroGridStyle: CSSProperties = {
   display: 'grid',
-  gap: '1rem',
+  gap: '0.85rem',
   alignItems: 'stretch',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
 };
 
 const copyColumnStyle: CSSProperties = {
@@ -142,11 +142,11 @@ const titleStyle: CSSProperties = {
 };
 
 const descriptionStyle: CSSProperties = {
-  margin: '0.7rem 0 0',
+  margin: '0.5rem 0 0',
   maxWidth: '62ch',
   color: '#475569',
-  lineHeight: 1.6,
-  fontSize: '1rem',
+  lineHeight: 1.55,
+  fontSize: '0.98rem',
 };
 
 const heroBadgeStyle: CSSProperties = {
@@ -163,8 +163,8 @@ const heroBadgeStyle: CSSProperties = {
 
 const signalPanelStyle: CSSProperties = {
   display: 'grid',
-  gap: '0.9rem',
-  padding: '1rem',
+  gap: '0.75rem',
+  padding: '0.92rem',
   borderRadius: '18px',
   background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 41, 59, 0.96) 100%)',
   color: '#f8fafc',
@@ -183,13 +183,13 @@ const signalKickerStyle: CSSProperties = {
 
 const signalGridStyle: CSSProperties = {
   display: 'grid',
-  gap: '0.75rem',
+  gap: '0.55rem',
 };
 
 const signalCardStyle: CSSProperties = {
   display: 'grid',
   gap: '0.2rem',
-  paddingBottom: '0.75rem',
+  paddingBottom: '0.55rem',
   borderBottom: '1px solid rgba(148, 163, 184, 0.18)',
 };
 

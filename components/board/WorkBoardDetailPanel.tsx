@@ -16,9 +16,9 @@ type Props = {
 const panelStyle: CSSProperties = {
   border: '1px solid rgba(148, 163, 184, 0.24)',
   borderRadius: '22px',
-  padding: '1.05rem',
-  background: 'linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248, 245, 238, 0.94) 100%)',
-  minHeight: '240px',
+  padding: '1rem',
+  background: 'linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(248, 245, 238, 0.94) 100%)',
+  minHeight: '300px',
   boxShadow: '0 18px 40px rgba(15, 23, 42, 0.07)',
 };
 
@@ -42,7 +42,7 @@ const ddStyle: CSSProperties = {
 
 const panelSectionStyle: CSSProperties = {
   marginTop: '0.95rem',
-  padding: '0.95rem',
+  padding: '0.9rem',
   border: '1px solid rgba(148, 163, 184, 0.18)',
   borderRadius: '16px',
   background: 'rgba(255,255,255,0.8)',
@@ -220,6 +220,20 @@ export function WorkBoardDetailPanel({ row, onClose, title = 'Details' }: Props)
         <p style={{ margin: 0, color: '#64748b', lineHeight: 1.6 }}>
           Select a row to inspect board state, shipment linkage, and evidence-backed context.
         </p>
+        <div style={emptyGuideGridStyle}>
+          <div style={emptyGuideCardStyle}>
+            <span style={emptyGuideLabelStyle}>1. Queue</span>
+            <strong style={emptyGuideValueStyle}>Scan state, event, and owner before drilling into evidence.</strong>
+          </div>
+          <div style={emptyGuideCardStyle}>
+            <span style={emptyGuideLabelStyle}>2. Evidence</span>
+            <strong style={emptyGuideValueStyle}>Open live source-message context to confirm why the card exists.</strong>
+          </div>
+          <div style={emptyGuideCardStyle}>
+            <span style={emptyGuideLabelStyle}>3. Resolve</span>
+            <strong style={emptyGuideValueStyle}>Treat HOLD reason and shipment linkage as the unblock frame.</strong>
+          </div>
+        </div>
         {onClose ? (
           <button type="button" onClick={onClose} style={{ ...closeBtn, marginTop: '0.9rem' }}>
             Close
@@ -397,6 +411,35 @@ const emptyTitleStyle: CSSProperties = {
   color: '#0f172a',
 };
 
+const emptyGuideGridStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.6rem',
+  marginTop: '0.95rem',
+};
+
+const emptyGuideCardStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.16rem',
+  padding: '0.78rem 0.82rem',
+  borderRadius: '14px',
+  background: 'rgba(255,255,255,0.84)',
+  border: '1px solid rgba(148, 163, 184, 0.18)',
+};
+
+const emptyGuideLabelStyle: CSSProperties = {
+  fontSize: '0.72rem',
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  color: '#75623c',
+  fontWeight: 700,
+};
+
+const emptyGuideValueStyle: CSSProperties = {
+  color: '#0f172a',
+  fontSize: '0.92rem',
+  lineHeight: 1.45,
+};
+
 const headerWrapStyle: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
@@ -433,7 +476,7 @@ const factGridStyle: CSSProperties = {
   display: 'grid',
   gap: '0.65rem',
   gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  marginTop: '0.95rem',
+  marginTop: '0.9rem',
 };
 
 const factCardStyle: CSSProperties = {
